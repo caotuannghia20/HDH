@@ -3,6 +3,7 @@ import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 
 Window {
+    id: app
     width: 1700
     height: 500
     visible: true
@@ -205,38 +206,29 @@ Window {
 
             }
 
-            ListView {
-                id: queue
+            Queue {
+                id: readyQueue
                 x: 500
-                y: 400
-                model: tasks.length
-                orientation: Qt.Horizontal
-                width: 200
-                height: 50
+                y: 350
 
-                delegate: Rectangle {
-                    property alias ttime: ttt.text
-                    width: 50
-                    height: 50
-                    opacity: (time > tasks[index].releaseTime && tasks[index].remainTime > 0) ? 1 : 0
-                    color: tasks[index].color
-
-                    Text {
-                        id: ttt
-                        text: tasks[index].remainTime + time * 0
-                        anchors.centerIn: parent
-                    }
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    opacity: 0.1
-                    border {
-                        color: 'black'
-                        width: 1
-                    }
-                }
+                title: 'Ready queue'
+                time: app.time
+                tasks: app.tasks
+                condition: index => tasks[index].remainTime === tasks[index].exeTime
             }
+
+            Queue {
+                id: runningQueue
+                x: 500
+                y: 420
+
+                title: 'Running queue'
+                time: app.time
+                tasks: app.tasks
+                condition: index => tasks[index].remainTime > 0 && tasks[index].remainTime < tasks[index].exeTime
+            }
+
+
 
             Timer {
                 id: timer
@@ -245,23 +237,6 @@ Window {
                 repeat: true
 
                 onTriggered: {
-//                    if (!Number.isInteger(time)) {
-//                        for (let t of tasks) {
-//                            let offset = time + 0.5 - t.releaseTime
-//                            console.log(offset)
-//                            if (offset >= 0 && offset % t.period === 0) {
-//                                if (t.remainTime > 0)
-//                                    dlFailed.text += 'Task ' + t.id + ' failed deadline at ' + time +'\n'
-
-//                                t.remainTime += t.exeTime
-//                            }
-
-//                            console.log('Task ' + t.id + ' - Remain: ' + t.remainTime)
-//                        }
-//                        time += 0.5
-//                        return
-//                    }
-
                     console.log('----------' + time + '-------------')
 
                     for (let t of tasks) {
@@ -269,7 +244,7 @@ Window {
 
                         if (offset >= 0 && offset % t.period === 0) {
                             if (t.remainTime > 0)
-                                dlFailed.text += 'Task ' + t.id + ' failed deadline at ' + time +'\n'
+                                dlFailed.text += 'Task ' + t.id + ' failed deadline at ' + time + '\n'
 
                             t.remainTime += t.exeTime
                         }

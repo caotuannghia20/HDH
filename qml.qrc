@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>TaskCountDialog.qml</file>
         <file>TaskInfoDialog.qml</file>
+        <file>Queue.qml</file>
     </qresource>
 </RCC>
